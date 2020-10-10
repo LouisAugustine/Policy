@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="public/css/bootstrap.min.css">
+<script src="public/js/jquery-1.11.3.min.js"></script>
+<script src="public/js/bootstrap.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+<script src="https://unpkg.com/vee-validate@2.2.15/dist/vee-validate.js"></script>
+<title>Policy Docments Info</title>
+</head>
+<body>
+	<!-- container -->
+	<div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 column" style="text-align: center;">
+			<br>
+			</div>
+			<div class="col-md-12 column">
+			<div id="app">
+			Account name:
+				<select name="" id="" v-model="select2" @change='getValue'>
+					<option value="">--Please select--</option>
+					<option :value="item.document_name" v-for='item in optionList'>{{ item.account_name }}</option>
+				</select>
+			</div>
+		<div class="panel text-center">
+			<div class="col-md-12 column" style="text-align: center;">
+				<h3>Policy Docments Info</h3>
+			</div>
+    			<div class="panel-body table-responsive">
+				<!-- table begain -->
+				<table class="table table-hover" id="usertable">
+					<thead>
+						<tr>
+							<th>Document name</th>
+							<th>Account name</th>
+							<th>Policy number</th>
+							<th>Policy info</th>
+							<th>Timestamp</th>
+							<th>OwnerId</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(user,index) in userlist"
+							v-bind:class="{success: index % 2 !=0,info: index % 2 ==0}"
+							@click="change">
+							<td>{{user.document_name}}</td>
+							<td>{{user.account_name}}</td>
+							<td>{{user.policy_number}}</td>
+							<td>{{user.policy_info}}</td>
+							<td>{{user.timestamp}}</td>
+							<td>{{user.ownerId}}</td>
+						</tr>
+					</tbody>
+				</table>
+				<!-- table end -->
+			</div>
+			<!-- "row clearfix"> -->
+		</div>
+		<!-- col-md-12 column" -->
+	</div>
+	<!-- container -->
+<script>
+
+//The table gets the data method
+var table = new Vue({
+	el: '#usertable',
+	data:{
+		userlist : null
+	},
+	mounted () {
+		//Get the data of the Table from the background
+   		$.post('/tableList',function(res) {
+	        table.userlist = res.Items;
+		});       
+	},
+	methods:{	  		 
+	  change:function(){		  
+		  this.isActive =! this.isActive;		
+	  }
+    }
+});
+
+//The drop-down list gets the data method
+var select = new Vue({
+	el: '#app',
+	data: {
+		select2: '',
+		optionList: null
+	},
+	methods: {
+		init: function(){
+			//Get the data of the Table from the background
+			$.post('/tableList',function(res) {
+				select.optionList = res.Items;
+			});
+		},
+		getValue: function(){
+			//After the user selects a document name, the relevant data is quished from the background and returned to the table
+			$.post('/selectByAccountName?documentName='+ select.select2, function(data) {					
+				table.userlist = data.Items;				 
+			});
+		}
+	},
+	created: function() {
+		//Initialize the table data
+		this.init();
+	}
+})
+</script>
+</body>
+</html>
