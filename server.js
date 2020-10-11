@@ -19,9 +19,9 @@ AWS.config.update({
    region: "us-east-1",
    endpoint: 'https://dynamodb.us-east-1.amazonaws.com',
    // accessKeyId default can be used while using the downloadable version of DynamoDB.
-   accessKeyId: "AKIAV4ITCYNGN3NJHSPM",
+   accessKeyId: "",
    // secretAccessKey default can be used while using the downloadable version of DynamoDB.
-   secretAccessKey: "sXasU45744+IswM1Z1lKjIedkotlInIKGYIP4rmO"
+   secretAccessKey: ""
 });
 
 // Create the DynamoDB service object
