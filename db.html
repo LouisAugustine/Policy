@@ -1,0 +1,48 @@
+<html>
+<head>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.766.0.min.js"></script>
+    <script>
+
+        AWS.config.update({
+            alias: "",
+            region: "",
+            endpoint: '',
+            // accessKeyId default can be used while using the downloadable version of DynamoDB.
+            // For security reasons, do not store AWS Credentials in your files. Use Amazon Cognito instead.
+            accessKeyId: "",
+            // secretAccessKey default can be used while using the downloadable version of DynamoDB.
+            // For security reasons, do not store AWS Credentials in your files. Use Amazon Cognito instead.
+            secretAccessKey: ""
+        });
+
+
+        // Create the DynamoDB service object
+        var docClient = new AWS.DynamoDB.DocumentClient();
+
+
+        function scanData() {
+            var params = {
+                TableName: ''
+            };
+            
+        // Call DynamoDB to retrieve the list of tables
+        docClient.scan(params, function(err, data) {
+            if (err) {
+                //console.log("Error", err.code);
+                document.getElementById('textarea').innerHTML = "Unable to query table: " + "\n" + JSON.stringify(err, undefined, 2);
+            } else {
+                //console.log("Table names are ", data.TableNames);
+                document.getElementById('textarea').innerHTML = "Queried table: " + "\n" + JSON.stringify(data, undefined, 2);
+            }
+        });
+    }
+    </script>
+</head>
+
+<body>
+<input id="scanData" type="button" value="Scan" onclick="scanData();" />
+<br><br>
+<textarea readonly id= "textarea" style="width:600px; height:800px"></textarea>
+
+</body>
+</html>
