@@ -6,18 +6,21 @@ var bodyParser = require('body-parser');
 
 app.use('/public', express.static('public'));
  
-
 app.get('/', function (req, res) {
    res.sendFile( __dirname + "/" + "index.html" );
+})
+
+app.get('/db', function (req, res) {
+   res.sendFile( __dirname + "/" + "db.html" );
 })
 
 var data = null;
 // Load the AWS SDK for Node.js
 var AWS = require("aws-sdk");
 AWS.config.update({
-   //alias: "Louis_Augustine",
-   region: "us-east-1",
-   endpoint: 'https://dynamodb.us-east-1.amazonaws.com',
+   alias: "",
+   region: "",
+   endpoint: '',
    // accessKeyId default can be used while using the downloadable version of DynamoDB.
    accessKeyId: "",
    // secretAccessKey default can be used while using the downloadable version of DynamoDB.
@@ -28,7 +31,7 @@ AWS.config.update({
 var docClient = new AWS.DynamoDB.DocumentClient();
 //DynamoDB table parameters
 var params = {
-   TableName: 'PolicyDocmentsInfo'
+   TableName: ''
 };
 
 // Get data of table from the DynamoDB through Post 
@@ -39,29 +42,24 @@ app.post('/tableList', function(req, res, next){
          //console.log("Error", err.code);
          console.log("Unable to query. Error:", JSON.stringify(err, undefined, 2));
       } else {
-         //console.log("Table names are ", data.TableNames);
-         var ss = JSON.stringify(data.Items, undefined, 2);
-         //Replace all the account name to account_name, policy number to policy_number
-         ss = changeNames(ss);
-         console.log("after replace ss:",ss);
-         data.Items = JSON.parse(ss, undefined, 2);
-         res.send(data);
+         console.log("Table names are ", data.Items);
+         res.send(data.Items);
       }
    });
 });
 
 //The drop-down list selects the data after the start event and gets the data after the query from DynamoDB
-app.post('/selectByAccountName', function(req, res, next){
+app.post('/selectByCompanyName', function(req, res, next){
     var param = req.query || req.params;
-    var documentName = 1;
-    if(param.documentName != null){
-       documentName = param.documentName;
+    var CompanyName = null;
+    if(param.CompanyName != null){
+      CompanyName = param.CompanyName;
     }
     var params = {
-       TableName: 'PolicyDocmentsInfo',
-       KeyConditionExpression: "document_name =:name",
+       TableName: '',
+       KeyConditionExpression: "CompanyName =:name",
        ExpressionAttributeValues: {
-          ":name": documentName
+          ":name": CompanyName
        }
     };
     // Call DynamoDB to retrieve the list of tables
@@ -70,24 +68,11 @@ app.post('/selectByAccountName', function(req, res, next){
           //Print the error message in the background if there is an error in the query.
           console.log("Unable to query. Error:", JSON.stringify(err, undefined, 2));
        } else {
-          var ss = JSON.stringify(data.Items, undefined, 2);
-          //Replace all the account name to account_name, policy number to policy_number
-          ss = changeNames(ss);
-          console.log("after replace ss:",ss);
-          data.Items = JSON.parse(ss, undefined, 2);
-          res.send(data);
+          res.send(data.Items);
        }
     });
 });
 
-//The header keywords are processed
-function changeNames(name){
-   var resultName = "";
-   //Replace all the account name to account_name, policy number to policy_number
-   resultName = name.toString().replace(/account name/g,"account_name");
-   resultName = resultName.toString().replace(/policy number/g,"policy_number");
-   return resultName;
-}
  
 var server = app.listen(8880, function () { 
 var host = server.address().address
