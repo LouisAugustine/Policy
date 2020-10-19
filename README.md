@@ -1,2 +1,2 @@
 A simple application where you can return the contact details of an insurance broker when selected from a drop down list from the dynamoDB.
-Detailed demo link: http://contact.nzlouis.com:88 
+Detailed demo link: http://contact.nzlouis.com
